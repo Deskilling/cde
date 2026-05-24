@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"cde/internal/core"
-	"cde/internal/programs/zed"
+	"cde/internal/editor/zed"
 )
 
 func init() {
