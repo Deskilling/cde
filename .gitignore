@@ -1,0 +1,13 @@
+# Mac
+.DS_Store
+
+# Binary
+bin/
+
+# Test files
+*.test
+*.out
+
+# direnv
+.direnv/
+.envrc
