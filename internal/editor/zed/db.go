@@ -7,6 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
+
+	"cde/internal/editor"
 
 	"charm.land/log/v2"
 	_ "modernc.org/sqlite"
@@ -16,10 +19,10 @@ var dbPaths = map[string]string{
 	"darwin": filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "Zed", "db", "0-stable", "db.sqlite"),
 }
 
-func ZedExtractWorkspacePath() (path string, err error) {
+func (zed *Zed) ExtractWorkspace() (workspace editor.Workspace, err error) {
 	dbPath, ok := dbPaths[runtime.GOOS]
 	if !ok {
-		return "", fmt.Errorf("unsupported os: %s", runtime.GOOS)
+		return editor.Workspace{}, fmt.Errorf("unsupported os: %s", runtime.GOOS)
 	}
 
 	dataSource := fmt.Sprintf("file:%s?mode=ro&_journal=wal", dbPath)
@@ -28,23 +31,34 @@ func ZedExtractWorkspacePath() (path string, err error) {
 
 	db, err := sql.Open("sqlite", dataSource)
 	if err != nil {
-		return "", fmt.Errorf("open of db failed: %w", err)
+		return editor.Workspace{}, fmt.Errorf("open of db failed: %w", err)
 	}
 	defer db.Close()
 
+	var path string
+	var timestampStr string
+
 	err = db.QueryRow(`
-		SELECT paths
+		SELECT paths, timestamp
 		FROM workspaces
 		WHERE paths != ''
 		ORDER BY timestamp DESC
 		LIMIT 1
-	`).Scan(&path)
+	`).Scan(&path, &timestampStr)
 	if err == sql.ErrNoRows {
-		return "", errors.New("workspace not found")
+		return editor.Workspace{}, errors.New("workspace not found")
 	}
 	if err != nil {
-		return "", fmt.Errorf("query failed: %w", err)
+		return editor.Workspace{}, fmt.Errorf("query failed: %w", err)
 	}
 
-	return path, nil
+	timestamp, err := time.Parse("2006-01-02 15:04:05", timestampStr)
+	if err != nil {
+		return editor.Workspace{}, fmt.Errorf("failed to parse timestamp: %w", err)
+	}
+
+	return editor.Workspace{
+		Path:      path,
+		Timestamp: timestamp.Unix(),
+	}, nil
 }
