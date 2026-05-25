@@ -5,7 +5,9 @@ import (
 	"os"
 
 	"cde/internal/core"
-	"cde/internal/editor/zed"
+	"cde/internal/editor"
+
+	_ "cde/internal/editor/zed"
 )
 
 func init() {
@@ -18,6 +20,6 @@ func main() {
 		return
 	}
 
-	p, _ := zed.ZedExtractWorkspacePath()
-	fmt.Println(p)
+	w, _ := editor.Latest()
+	fmt.Print(w.Path)
 }
