@@ -1,4 +1,4 @@
-BINARY_NAME := cde
+BINARY_NAME := cde-bin
 BUILD_DIR := bin
 
 MAIN_PATH := ./cmd/$(BINARY_NAME)/main.go
