@@ -15,7 +15,8 @@ import (
 
 // TODO Support Overrides via config
 var storagePaths = map[string]string{
-	"linux": filepath.Join(os.Getenv("HOME"), ".config", "VSCodium", "User", "globalStorage", "storage.json"),
+	"darwin": filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "VSCodium", "User", "globalStorage", "storage.json"),
+	"linux":  filepath.Join(os.Getenv("HOME"), ".config", "VSCodium", "User", "globalStorage", "storage.json"),
 }
 
 type storage struct {
