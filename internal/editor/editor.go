@@ -1,6 +1,10 @@
 package editor
 
-import "errors"
+import (
+	"errors"
+
+	"charm.land/log/v2"
+)
 
 type Workspace struct {
 	Path      string
@@ -26,6 +30,7 @@ func Latest() (latest Workspace, err error) {
 		}
 
 		if w.Timestamp > latest.Timestamp {
+			log.Debugf("cmp %v(%s) > %v(%s)", w.Timestamp, w.Path, latest.Timestamp, latest.Path)
 			latest = w
 		}
 	}

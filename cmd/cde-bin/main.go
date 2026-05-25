@@ -7,6 +7,7 @@ import (
 	"cde/internal/core"
 	"cde/internal/editor"
 
+	_ "cde/internal/editor/vscodium"
 	_ "cde/internal/editor/zed"
 )
 

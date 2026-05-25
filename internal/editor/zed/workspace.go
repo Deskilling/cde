@@ -15,6 +15,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// TODO Support Overrides via config
 var dbPaths = map[string]string{
 	"darwin": filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "Zed", "db", "0-stable", "db.sqlite"),
 	"linux":  filepath.Join(os.Getenv("HOME"), ".local", "share", "zed", "db", "0-stable", "db.sqlite"),
@@ -57,6 +58,7 @@ func (zed *Zed) ExtractWorkspace() (workspace editor.Workspace, err error) {
 	if err != nil {
 		return editor.Workspace{}, fmt.Errorf("failed to parse timestamp: %w", err)
 	}
+	log.Debug(timestamp.Unix())
 
 	return editor.Workspace{
 		Path:      path,
