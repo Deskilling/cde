@@ -17,9 +17,10 @@ func init() {
 
 func usage() {
 	log.Print("Usage:")
-	log.Print("  cde help")
-	log.Print("  cde init <shell>")
-	log.Print("  cde path")
+	log.Print("  cde help 			   shows help")
+	log.Print("  cde install <shell>	 install automatically for your shell")
+	log.Print("  cde init <shell>		returns script for current shell")
+	log.Print("  cde path				return latest path")
 }
 
 func main() {
@@ -45,7 +46,17 @@ func main() {
 			usage()
 			return
 		}
+
 		core.InitShell(args[1])
+
+	case "install":
+		if len(args) != 2 {
+			log.Error("install requires a single <shell> argument")
+			usage()
+			return
+		}
+
+		core.InstallShell(args[1])
 
 	default:
 		log.Errorf("unknown command: %s", args[0])
