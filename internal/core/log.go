@@ -8,7 +8,7 @@ import (
 
 func InitLogger(level log.Level) {
 	log.SetLevel(level)
-	log.SetPrefix("mfg-dl")
+	log.SetPrefix("cde")
 	log.SetColorProfile(colorprofile.TrueColor)
 	log.SetFormatter(log.TextFormatter)
 
