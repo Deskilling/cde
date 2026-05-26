@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
+
+	"charm.land/log/v2"
 )
 
 //go:embed shell/cde.zsh
@@ -16,7 +18,7 @@ var shells = map[string]string{
 func InitShell(shell string) {
 	init, ok := shells[shell]
 	if !ok {
-		fmt.Fprintf(os.Stderr, "unsupported shell: %s\n", shell)
+		log.Errorf("unsupported shell: %s", shell)
 		os.Exit(1)
 	}
 	fmt.Print(init)
