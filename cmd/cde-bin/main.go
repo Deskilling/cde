@@ -11,21 +11,45 @@ import (
 )
 
 func init() {
-	core.InitLogger(-4)
+	core.InitLogger(0)
 	editor.Load()
 }
 
+func usage() {
+	log.Print("Usage:")
+	log.Print("  cde help")
+	log.Print("  cde init <shell>")
+	log.Print("  cde path")
+}
+
 func main() {
-	if len(os.Args) == 3 && os.Args[1] == "init" {
-		core.InitShell(os.Args[2])
+	args := os.Args[1:]
+
+	if len(args) == 0 || args[0] == "help" {
+		usage()
 		return
 	}
 
-	w, err := editor.Latest()
-	if err != nil {
-		log.Error(err)
+	switch args[0] {
+	case "path":
+		w, err := editor.Latest()
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		fmt.Print(w.Path)
+
+	case "init":
+		if len(args) != 2 {
+			log.Error("init requires a single <shell> argument")
+			usage()
+			return
+		}
+		core.InitShell(args[1])
+
+	default:
+		log.Errorf("unknown command: %s", args[0])
+		log.Info("see all valid arguments via cde help")
 		return
 	}
-
-	fmt.Print(w.Path)
 }
