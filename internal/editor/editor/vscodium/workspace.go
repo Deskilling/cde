@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	"cde/internal/editor"
+	"cde/internal/editor/model"
 
 	"charm.land/log/v2"
 )
@@ -27,16 +27,16 @@ type storage struct {
 	} `json:"windowsState"`
 }
 
-func (vscodium *VsCodium) ExtractWorkspace() (workspace editor.Workspace, err error) {
+func (vscodium *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
 	storagePath, ok := storagePaths[runtime.GOOS]
 	if !ok {
-		return editor.Workspace{}, fmt.Errorf("unsupported os: %s", runtime.GOOS)
+		return model.Workspace{}, fmt.Errorf("unsupported os: %s", runtime.GOOS)
 	}
 
 	log.Debug(storagePath)
 	content, err := os.ReadFile(storagePath)
 	if err != nil {
-		return editor.Workspace{}, fmt.Errorf("failed reading file: %w", err)
+		return model.Workspace{}, fmt.Errorf("failed reading file: %w", err)
 	}
 
 	var storageJson storage
@@ -49,7 +49,7 @@ func (vscodium *VsCodium) ExtractWorkspace() (workspace editor.Workspace, err er
 	time := info.ModTime()
 	log.Debug(time.Unix())
 
-	return editor.Workspace{
+	return model.Workspace{
 		Path:      path,
 		Timestamp: time.Unix(),
 	}, nil
