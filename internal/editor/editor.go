@@ -2,30 +2,32 @@ package editor
 
 import (
 	"errors"
+	"os"
+
+	"cde/internal/editor/editor/vscodium"
+	"cde/internal/editor/editor/zed"
+	"cde/internal/editor/model"
 
 	"charm.land/log/v2"
 )
 
-type Workspace struct {
-	Path      string
-	Timestamp int64
+var Registered []model.Editor
+
+func Load() {
+	Registered = append(Registered, vscodium.New())
+	Registered = append(Registered, zed.New())
 }
 
-type Editor interface {
-	Name() string
-	ExtractWorkspace() (Workspace, error)
-}
-
-var Registered []Editor
-
-func Register(editor Editor) {
-	Registered = append(Registered, editor)
-}
-
-func Latest() (latest Workspace, err error) {
+func Latest() (latest model.Workspace, err error) {
 	for _, v := range Registered {
 		w, err := v.ExtractWorkspace()
 		if err != nil {
+			continue
+		}
+
+		// TODO add config toggle
+		workingDirectory, _ := os.Getwd()
+		if w.Path == workingDirectory {
 			continue
 		}
 
@@ -35,7 +37,7 @@ func Latest() (latest Workspace, err error) {
 		}
 	}
 	if latest.Path == "" {
-		return Workspace{}, errors.New("no active workspace found")
+		return model.Workspace{}, errors.New("no active workspace found")
 	}
 
 	return latest, nil

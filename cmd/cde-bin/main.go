@@ -7,12 +7,12 @@ import (
 	"cde/internal/core"
 	"cde/internal/editor"
 
-	_ "cde/internal/editor/vscodium"
-	_ "cde/internal/editor/zed"
+	"charm.land/log/v2"
 )
 
 func init() {
-	core.InitLogger(0)
+	core.InitLogger(-4)
+	editor.Load()
 }
 
 func main() {
@@ -21,6 +21,12 @@ func main() {
 		return
 	}
 
-	w, _ := editor.Latest()
+	w, err := editor.Latest()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
 	fmt.Print(w.Path)
+
 }
