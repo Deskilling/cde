@@ -12,6 +12,7 @@ import (
 
 func init() {
 	core.InitLogger(0)
+	core.LoadConfig("./config.toml")
 	editor.Load()
 }
 
@@ -63,4 +64,5 @@ func main() {
 		log.Info("see all valid arguments via cde help")
 		return
 	}
+
 }

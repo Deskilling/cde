@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"cde/internal/core"
 	"cde/internal/editor/editor/vscodium"
 	"cde/internal/editor/editor/zed"
 	"cde/internal/editor/model"
@@ -15,10 +16,19 @@ import (
 var Registered []model.Editor
 
 func Load() {
-	Registered = append(Registered, vscodium.New())
-	Registered = append(Registered, zed.New())
-}
+	editors := []model.Editor{
+		vscodium.New(),
+		zed.New(),
+	}
 
+	for _, editor := range editors {
+		cfg, ok := core.GetConfig().Editors[editor.Name()]
+		if ok && cfg.Disabled {
+			continue
+		}
+		Registered = append(Registered, editor)
+	}
+}
 func Latest() (latest model.Workspace, err error) {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
