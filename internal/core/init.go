@@ -11,8 +11,12 @@ import (
 //go:embed shell/cde.zsh
 var zshInit string
 
+//go:embed shell/cde.fish
+var fishInit string
+
 var shells = map[string]string{
-	"zsh": zshInit,
+	"zsh":  zshInit,
+	"fish": fishInit,
 }
 
 func InitShell(shell string) {

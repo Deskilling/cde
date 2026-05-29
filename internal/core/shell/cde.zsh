@@ -6,6 +6,6 @@ cde() {
  else
   local target
   target=$(cde-bin path) || return 0
-  cd "$target"
+  builtin cd "$target"
  fi
 }
