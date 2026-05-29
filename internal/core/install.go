@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func appendToFile(path, content string) error {
@@ -22,10 +23,36 @@ func appendToFile(path, content string) error {
 	return nil
 }
 
-func InstallShell(shell string) error {
+var zshConfig map[string]string = map[string]string{
+	"darwin": filepath.Join(os.Getenv("HOME"), ".zshrc"),
+	"linux":  filepath.Join(os.Getenv("HOME"), ".zshrc"),
+}
+
+var fishConfig map[string]string = map[string]string{
+	"darwin": filepath.Join(os.Getenv("HOME"), ".config", "fish", "conf.d"),
+	"linux":  filepath.Join(os.Getenv("HOME"), ".config", "fish", "conf.d"),
+}
+
+func InstallShell(shell string) (err error) {
 	switch shell {
 	case "zsh":
-		return appendToFile(filepath.Join(os.Getenv("HOME"), ".zshrc"), `eval "$(cde-bin init zsh)"`)
+		zshConfig, ok := zshConfig[runtime.GOOS]
+		if !ok {
+			return fmt.Errorf("unsupported os: %s", runtime.GOOS)
+		}
+		return appendToFile(zshConfig, `eval "$(cde-bin init zsh)"`)
+
+	case "fish":
+		confDir, ok := fishConfig[runtime.GOOS]
+		if !ok {
+			return fmt.Errorf("unsupported os: %s", runtime.GOOS)
+		}
+		err = os.MkdirAll(confDir, 0755)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(filepath.Join(confDir, "cde.fish"), []byte(`cde-bin init fish | source`), 0644)
+
 	default:
 		return errors.New("shell not supported")
 	}
