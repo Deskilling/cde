@@ -6,25 +6,24 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"cde/internal/editor/model"
+	"cde/internal/util"
 
 	"charm.land/log/v2"
 	_ "modernc.org/sqlite"
 )
 
-// TODO Support Overrides via config
 var dbPaths = map[string]string{
 	"darwin": filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "Zed", "db", "0-stable", "db.sqlite"),
 	"linux":  filepath.Join(os.Getenv("HOME"), ".local", "share", "zed", "db", "0-stable", "db.sqlite"),
 }
 
 func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
-	dbPath, ok := dbPaths[runtime.GOOS]
-	if !ok {
-		return model.Workspace{}, fmt.Errorf("unsupported os: %s", runtime.GOOS)
+	dbPath, err := util.CheckOverride(e.Name(), dbPaths)
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("failed getting dbPath: %w", err)
 	}
 
 	dataSource := fmt.Sprintf("file:%s?mode=ro&_journal=wal", dbPath)

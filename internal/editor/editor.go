@@ -29,6 +29,7 @@ func Load() {
 		Registered = append(Registered, editor)
 	}
 }
+
 func Latest() (latest model.Workspace, err error) {
 	var mu sync.Mutex
 	var wg sync.WaitGroup

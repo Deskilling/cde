@@ -8,6 +8,6 @@ func New() *VsCodium {
 	return &VsCodium{}
 }
 
-func (vscodium *VsCodium) Name() string {
+func (e *VsCodium) Name() string {
 	return name
 }
