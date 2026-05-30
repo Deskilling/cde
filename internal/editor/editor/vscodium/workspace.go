@@ -7,15 +7,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"cde/internal/core"
 	"cde/internal/editor/model"
-	"cde/internal/util"
 
 	"charm.land/log/v2"
 )
 
 var storagePaths = map[string]string{
 	"darwin": filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "VSCodium", "User", "globalStorage", "storage.json"),
-	"linux":  filepath.Join(os.Getenv("HOME"), ".config", "VSCodium", "User", "globalStorage", "storage.json"),
+	"linux":  filepath.Join(core.GetConfigDir(), "VSCodium", "User", "globalStorage", "storage.json"),
 }
 
 type storage struct {
@@ -27,7 +27,7 @@ type storage struct {
 }
 
 func (e *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
-	storagePath, err := util.CheckOverride(e.Name(), storagePaths)
+	storagePath, err := core.CheckOverride(e.Name(), storagePaths)
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed getting storagePath: %w", err)
 	}
