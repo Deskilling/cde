@@ -33,6 +33,11 @@ var fishConfig map[string]string = map[string]string{
 	"linux":  filepath.Join(os.Getenv("HOME"), ".config", "fish", "conf.d"),
 }
 
+var bashConfig map[string]string = map[string]string{
+	"darwin": filepath.Join(os.Getenv("HOME"), ".bash_profile"),
+	"linux":  filepath.Join(os.Getenv("HOME"), ".bashrc"),
+}
+
 func InstallShell(shell string) (err error) {
 	switch shell {
 	case "zsh":
@@ -52,6 +57,13 @@ func InstallShell(shell string) (err error) {
 			return err
 		}
 		return os.WriteFile(filepath.Join(confDir, "cde.fish"), []byte(`cde-bin init fish | source`), 0644)
+
+	case "bash":
+		bashConfig, ok := bashConfig[runtime.GOOS]
+		if !ok {
+			return fmt.Errorf("unsupported os: %s", runtime.GOOS)
+		}
+		return appendToFile(bashConfig, `eval "$(cde-bin init bash)"`)
 
 	default:
 		return errors.New("shell not supported")
