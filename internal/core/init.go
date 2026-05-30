@@ -14,9 +14,13 @@ var zshInit string
 //go:embed shell/cde.fish
 var fishInit string
 
+//go:embed shell/cde.bash
+var bashInit string
+
 var shells = map[string]string{
 	"zsh":  zshInit,
 	"fish": fishInit,
+	"bash": bashInit,
 }
 
 func InitShell(shell string) {
