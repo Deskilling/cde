@@ -1,10 +1,8 @@
-package util
+package core
 
 import (
 	"fmt"
 	"runtime"
-
-	"cde/internal/core"
 )
 
 func supported(paths map[string]string) (string, error) {
@@ -16,7 +14,7 @@ func supported(paths map[string]string) (string, error) {
 }
 
 func CheckOverride(editorName string, defaultPaths map[string]string) (string, error) {
-	editor, ok := core.GetConfig().Editors[editorName]
+	editor, ok := GetConfig().Editors[editorName]
 	if editor.WorkspacePath[runtime.GOOS] == "" || !ok {
 		return supported(defaultPaths)
 	}

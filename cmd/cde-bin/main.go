@@ -12,7 +12,7 @@ import (
 
 func init() {
 	core.InitLogger(0)
-	core.LoadConfig("./config.toml")
+	core.LoadConfig(core.GetConfigLocation())
 	editor.Load()
 }
 

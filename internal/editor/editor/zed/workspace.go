@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"cde/internal/core"
 	"cde/internal/editor/model"
-	"cde/internal/util"
 
 	"charm.land/log/v2"
 	_ "modernc.org/sqlite"
@@ -21,7 +21,7 @@ var dbPaths = map[string]string{
 }
 
 func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
-	dbPath, err := util.CheckOverride(e.Name(), dbPaths)
+	dbPath, err := core.CheckOverride(e.Name(), dbPaths)
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed getting dbPath: %w", err)
 	}
