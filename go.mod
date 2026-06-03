@@ -6,7 +6,6 @@ require (
 	charm.land/lipgloss/v2 v2.0.3
 	charm.land/log/v2 v2.0.0
 	github.com/charmbracelet/colorprofile v0.4.3
-	github.com/pelletier/go-toml/v2 v2.2.4
 	go.yaml.in/yaml/v3 v3.0.4
 	modernc.org/sqlite v1.50.1
 )
