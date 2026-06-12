@@ -40,14 +40,25 @@ func Latest() (latest model.Workspace, err error) {
 		wg.Add(1)
 		go func(editor model.Editor) {
 			defer wg.Done()
-			w, err := v.ExtractWorkspace()
+			w, err := editor.ExtractWorkspace()
 			if err != nil {
 				return
 			}
 
-			// TODO add config toggle
 			if w.Path == workingDirectory {
-				return
+				switch core.GetConfig().Behavior.Repeat {
+				case "other":
+					return
+
+				case "editor":
+					// TODO i need to save the workspace somewhere (maybe in XDG_CACHE_HOME or smth)
+					log.Warn("editor not implemented currently")
+
+				case "nothing":
+
+				default:
+					log.Warn("invalid Behavior.Repeat key using nothing")
+				}
 			}
 
 			mu.Lock()
