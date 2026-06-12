@@ -12,16 +12,21 @@ import (
 
 func init() {
 	core.InitLogger(0)
-	core.LoadConfig(core.GetConfigLocation())
+
+	err := core.LoadConfig(core.GetConfigLocation())
+	if err != nil {
+		log.Infof("created default config at %s", core.GetConfigLocation())
+	}
 	editor.Load()
 }
 
 func usage() {
 	log.Print("Usage:")
 	log.Print("  cde help 			   shows help")
-	log.Print("  cde install <shell>	 install automatically for your shell")
-	log.Print("  cde init <shell>		returns script for current shell")
-	log.Print("  cde path				return latest path")
+	log.Print("  cde install <shell>	 install automatically for given shell")
+	log.Print("  cde init <shell>		returns script for given shell")
+	log.Print("  cde path				returns latest path")
+	log.Print("  cde config				returns config path")
 }
 
 func main() {
@@ -58,6 +63,9 @@ func main() {
 		}
 
 		core.InstallShell(args[1])
+
+	case "config":
+		fmt.Print(core.GetConfigLocation())
 
 	default:
 		log.Errorf("unknown command: %s", args[0])

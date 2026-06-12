@@ -9,13 +9,18 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
+type Behavior struct {
+	Repeat string `yaml:"repeat"`
+}
+
 type Editor struct {
 	Disabled      bool              `yaml:"disabled"`
 	WorkspacePath map[string]string `yaml:"workspace_path"`
 }
 
 type Config struct {
-	Editors map[string]Editor `yaml:"editors"`
+	Behavior Behavior          `yaml:"behavior"`
+	Editors  map[string]Editor `yaml:"editors"`
 }
 
 func GetConfigDir() string {
@@ -42,11 +47,18 @@ func GetConfigLocation() string {
 }
 
 var defaultConfig = Config{
+	Behavior: Behavior{
+		// editor -> old from current editor
+		// other -> other editor
+		// nothing -> nothing
+		Repeat: "editor",
+	},
+
 	Editors: map[string]Editor{
-		"vscodium": {
-			Disabled: false,
+		"example": {
+			Disabled: true,
 			WorkspacePath: map[string]string{
-				"templeos": "path",
+				"linux": "path",
 			},
 		},
 	},
