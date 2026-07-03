@@ -19,6 +19,24 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
+        packages.default = pkgs.buildGoModule {
+          pname = "cde";
+          version = "0.0.1";
+          src = ./.;
+
+          vendorHash = "sha256-Jv4zgNFxa1AskeSB3fbuCNRus1XTjc8xSvwwZoAwE0k=";
+
+          subPackages = [ "cmd/cde-bin" ];
+
+          env.CGO_ENABLED = "0";
+
+          flags = [ "-trimpath" ];
+          ldflags = [
+            "-s"
+            "-w"
+          ];
+        };
+
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             gnumake
