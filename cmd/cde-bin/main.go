@@ -3,12 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"cde/internal/core"
 	"cde/internal/editor"
 
 	"charm.land/log/v2"
 )
+
+const Version = "0.0.2"
 
 func init() {
 	core.InitLogger(0)
@@ -22,11 +25,12 @@ func init() {
 
 func usage() {
 	log.Print("Usage:")
+	log.Print("  cde version             shows version")
 	log.Print("  cde help 			   shows help")
 	log.Print("  cde install <shell>	 install automatically for given shell")
 	log.Print("  cde init <shell>		returns script for given shell")
 	log.Print("  cde path				returns latest path")
-	log.Print("  cde config				returns config path")
+	log.Print("  cde config			  returns config path")
 }
 
 func main() {
@@ -38,6 +42,9 @@ func main() {
 	}
 
 	switch args[0] {
+	case "version":
+		log.Printf("cde-bin Version %s on %s %s", Version, runtime.GOOS, runtime.GOARCH)
+
 	case "path":
 		w, err := editor.Latest()
 		if err != nil {
