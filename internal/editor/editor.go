@@ -26,7 +26,11 @@ func Load() {
 		if ok && cfg.Disabled {
 			continue
 		}
-		Registered = append(Registered, editor)
+
+		_, err := editor.ExtractWorkspace()
+		if err == nil {
+			Registered = append(Registered, editor)
+		}
 	}
 }
 

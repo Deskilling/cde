@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 
 	"cde/internal/core"
 	"cde/internal/editor"
@@ -11,10 +12,10 @@ import (
 	"charm.land/log/v2"
 )
 
-const Version = "0.0.2"
+const Version = "0.0.3"
 
 func init() {
-	core.InitLogger(0)
+	core.InitLogger(log.InfoLevel)
 
 	err := core.LoadConfig(core.GetConfigLocation())
 	if err != nil {
@@ -31,6 +32,8 @@ func usage() {
 	log.Print("  cde init <shell>		returns script for given shell")
 	log.Print("  cde path				returns latest path")
 	log.Print("  cde config			  returns config path")
+	log.Print("  cde list 			   lists all available editors")
+	log.Print("  cde -[editor]  		 switch to the latest workspace of specified editor")
 }
 
 func main() {
@@ -38,6 +41,22 @@ func main() {
 
 	if len(args) == 0 || args[0] == "help" {
 		usage()
+		return
+	}
+
+	_editor, hasDash := strings.CutPrefix(args[0], "-")
+	if hasDash {
+		for _, u := range editor.Registered {
+			if u.Name() == _editor {
+				workspace, err := u.ExtractWorkspace()
+				if err != nil {
+					log.Error(err)
+					return
+				}
+				fmt.Print(workspace.Path)
+			}
+		}
+
 		return
 	}
 
@@ -73,6 +92,11 @@ func main() {
 
 	case "config":
 		fmt.Print(core.GetConfigLocation())
+
+	case "list":
+		for _, v := range editor.Registered {
+			fmt.Println(v.Name())
+		}
 
 	default:
 		log.Errorf("unknown command: %s", args[0])
