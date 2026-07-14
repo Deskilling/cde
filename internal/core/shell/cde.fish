@@ -1,9 +1,11 @@
 function cde
-    set -x PATH $PATH $HOME/.nix-profile/bin
     if test (count $argv) -gt 0
-        cde-bin $argv
+        if string match -q -- '^-' "$argv[1]"
+            cd (cde-bin $argv[1])
+        else
+            cd (cde-bin $argv)
+        end
     else
-        set target (cde-bin path) or return 0
-        builtin cd $target
+        cd (cde-bin path)
     end
 end
