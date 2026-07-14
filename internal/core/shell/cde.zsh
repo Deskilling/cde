@@ -1,11 +1,14 @@
 cde() {
- export PATH="$PATH:$HOME/.nix-profile/bin"
-
- if [[ $# -gt 0 ]]; then
-  cde-bin "$@"
- else
-  local target
-  target=$(cde-bin path) || return 0
-  builtin cd "$target"
- fi
+    if [[ $# -gt 0 ]]; then
+        if [[ "$1" == -* ]]; then
+            target=$(cde-bin -${1#-}) || return 0
+            builtin cd "$target"
+        else
+            cde-bin "$@"
+    fi
+    else
+        local target
+        target=$(cde-bin path) || return 0
+        builtin cd "$target"
+    fi
 }
