@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"cde/internal/core"
+	"cde/internal/editor/editor/vscode"
 	"cde/internal/editor/editor/vscodium"
 	"cde/internal/editor/editor/zed"
 	"cde/internal/editor/model"
@@ -18,6 +19,7 @@ var Registered []model.Editor
 func Load() {
 	editors := []model.Editor{
 		vscodium.New(),
+		vscode.New(),
 		zed.New(),
 	}
 
