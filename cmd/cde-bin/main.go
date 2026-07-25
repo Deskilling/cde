@@ -12,7 +12,7 @@ import (
 	"charm.land/log/v2"
 )
 
-const Version = "0.0.3"
+const Version = "0.0.4"
 
 func init() {
 	core.InitLogger(log.InfoLevel)
