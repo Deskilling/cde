@@ -3,14 +3,15 @@ module cde
 go 1.25.9
 
 require (
-	charm.land/lipgloss/v2 v2.0.3
 	charm.land/log/v2 v2.0.0
-	github.com/charmbracelet/colorprofile v0.4.3
+	github.com/lmittmann/tint v1.2.0
 	go.yaml.in/yaml/v3 v3.0.4
 	modernc.org/sqlite v1.50.1
 )
 
 require (
+	charm.land/lipgloss/v2 v2.0.3 // indirect
+	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20251205161215-1948445e3318 // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect

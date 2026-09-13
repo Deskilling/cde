@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"runtime"
 	"strings"
@@ -15,7 +16,7 @@ import (
 const Version = "0.0.4"
 
 func init() {
-	core.InitLogger(log.InfoLevel)
+	core.InitLogger(-4)
 
 	err := core.LoadConfig(core.GetConfigLocation())
 	if err != nil {
@@ -47,10 +48,10 @@ func main() {
 	_editor, hasDash := strings.CutPrefix(args[0], "-")
 	if hasDash {
 		for _, u := range editor.Registered {
-			if u.Name() == _editor {
-				workspace, err := u.ExtractWorkspace()
+			if u.Editor.Name() == _editor {
+				workspace, err := u.Editor.ExtractWorkspace()
 				if err != nil {
-					log.Error(err)
+					slog.Error("%w", err)
 					return
 				}
 				fmt.Print(workspace.Path)
@@ -95,7 +96,7 @@ func main() {
 
 	case "list":
 		for _, v := range editor.Registered {
-			fmt.Println(v.Name())
+			fmt.Println(v.Editor.Name())
 		}
 
 	default:
