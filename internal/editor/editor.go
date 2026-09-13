@@ -3,7 +3,6 @@ package editor
 import (
 	"errors"
 	"os"
-	"sync"
 
 	"cde/internal/core"
 	"cde/internal/editor/editor/vscode"
@@ -14,7 +13,12 @@ import (
 	"charm.land/log/v2"
 )
 
-var Registered []model.Editor
+type Loaded struct {
+	Editor    model.Editor
+	Workspace model.Workspace
+}
+
+var Registered []Loaded
 
 func Load() {
 	editors := []model.Editor{
@@ -29,53 +33,44 @@ func Load() {
 			continue
 		}
 
-		_, err := editor.ExtractWorkspace()
+		ws, err := editor.ExtractWorkspace()
 		if err == nil {
-			Registered = append(Registered, editor)
+			Registered = append(Registered, Loaded{
+				Editor:    editor,
+				Workspace: ws,
+			})
+			continue
+		} else {
+			log.Warn(err)
 		}
 	}
 }
 
 func Latest() (latest model.Workspace, err error) {
-	var mu sync.Mutex
-	var wg sync.WaitGroup
-
 	workingDirectory, _ := os.Getwd()
 
 	for _, v := range Registered {
-		wg.Add(1)
-		go func(editor model.Editor) {
-			defer wg.Done()
-			w, err := editor.ExtractWorkspace()
-			if err != nil {
+		if v.Workspace.Path == workingDirectory {
+			switch core.GetConfig().Behavior.Repeat {
+			case "other":
 				return
+
+			case "editor":
+				// TODO i need to save the workspace somewhere (maybe in XDG_CACHE_HOME or smth)
+				log.Warn("editor not implemented currently")
+
+			case "nothing":
+
+			default:
+				log.Warn("invalid Behavior.Repeat key using nothing")
 			}
+		}
 
-			if w.Path == workingDirectory {
-				switch core.GetConfig().Behavior.Repeat {
-				case "other":
-					return
-
-				case "editor":
-					// TODO i need to save the workspace somewhere (maybe in XDG_CACHE_HOME or smth)
-					log.Warn("editor not implemented currently")
-
-				case "nothing":
-
-				default:
-					log.Warn("invalid Behavior.Repeat key using nothing")
-				}
-			}
-
-			mu.Lock()
-			if w.Timestamp > latest.Timestamp {
-				log.Debugf("cmp %v(%s) > %v(%s)", w.Timestamp, w.Path, latest.Timestamp, latest.Path)
-				latest = w
-			}
-			mu.Unlock()
-		}(v)
+		if v.Workspace.Timestamp > latest.Timestamp {
+			log.Debugf("cmp %v(%s) > %v(%s)", v.Workspace.Timestamp, v.Workspace.Path, latest.Timestamp, latest.Path)
+			latest = v.Workspace
+		}
 	}
-	wg.Wait()
 
 	if latest.Path == "" {
 		return model.Workspace{}, errors.New("no active workspace found")
