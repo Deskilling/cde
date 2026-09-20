@@ -3,9 +3,8 @@ package core
 import (
 	_ "embed"
 	"fmt"
+	"log/slog"
 	"os"
-
-	"charm.land/log/v2"
 )
 
 //go:embed shell/cde.zsh
@@ -26,7 +25,7 @@ var shells = map[string]string{
 func InitShell(shell string) {
 	init, ok := shells[shell]
 	if !ok {
-		log.Errorf("unsupported shell: %s", shell)
+		slog.Error("unsupported shell", "shell",shell)
 		os.Exit(1)
 	}
 	fmt.Print(init)

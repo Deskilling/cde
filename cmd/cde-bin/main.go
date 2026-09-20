@@ -9,32 +9,29 @@ import (
 
 	"cde/internal/core"
 	"cde/internal/editor"
-
-	"charm.land/log/v2"
 )
 
-const Version = "0.0.4"
+const Version = "0.0.6"
 
 func init() {
-	core.InitLogger(-4)
+	core.InitLogger(8)
 
 	err := core.LoadConfig(core.GetConfigLocation())
 	if err != nil {
-		log.Infof("created default config at %s", core.GetConfigLocation())
+		slog.Info("created default config at","location", core.GetConfigLocation())
 	}
-	editor.Load()
 }
 
 func usage() {
-	log.Print("Usage:")
-	log.Print("  cde version             shows version")
-	log.Print("  cde help 			   shows help")
-	log.Print("  cde install <shell>	 install automatically for given shell")
-	log.Print("  cde init <shell>		returns script for given shell")
-	log.Print("  cde path				returns latest path")
-	log.Print("  cde config			  returns config path")
-	log.Print("  cde list 			   lists all available editors")
-	log.Print("  cde -[editor]  		 switch to the latest workspace of specified editor")
+	slog.Info("Usage:")
+	fmt.Println("  cde version             shows version")
+	fmt.Println("  cde help 		  shows help")
+	fmt.Println("  cde install <shell>  	  install automatically for given shell")
+	fmt.Println("  cde init <shell>        returns script for given shell")
+	fmt.Println("  cde path	          returns latest path")
+	fmt.Println("  cde config	          returns config path")
+	fmt.Println("  cde list                lists all available editors")
+	fmt.Println("  cde -[editor]  	  switch to the latest workspace of specified editor")
 }
 
 func main() {
@@ -51,7 +48,7 @@ func main() {
 			if u.Editor.Name() == _editor {
 				workspace, err := u.Editor.ExtractWorkspace()
 				if err != nil {
-					slog.Error("%w", err)
+					slog.Error("Failed getting workspace", "err", err)
 					return
 				}
 				fmt.Print(workspace.Path)
@@ -63,19 +60,21 @@ func main() {
 
 	switch args[0] {
 	case "version":
-		log.Printf("cde-bin Version %s on %s %s", Version, runtime.GOOS, runtime.GOARCH)
+		fmt.Printf("cde-bin Version %s on %s %s\n", Version, runtime.GOOS, runtime.GOARCH)
 
 	case "path":
+		editor.Load()
+
 		w, err := editor.Latest()
 		if err != nil {
-			log.Error(err)
+			slog.Error("Failed returning path", "err", err)
 			return
 		}
 		fmt.Print(w.Path)
 
 	case "init":
 		if len(args) != 2 {
-			log.Error("init requires a single <shell> argument")
+			slog.Error("init requires a single <shell> argument")
 			usage()
 			return
 		}
@@ -84,7 +83,7 @@ func main() {
 
 	case "install":
 		if len(args) != 2 {
-			log.Error("install requires a single <shell> argument")
+			slog.Error("install requires a single <shell> argument")
 			usage()
 			return
 		}
@@ -95,13 +94,15 @@ func main() {
 		fmt.Print(core.GetConfigLocation())
 
 	case "list":
+		editor.Load()
+
 		for _, v := range editor.Registered {
 			fmt.Println(v.Editor.Name())
 		}
 
 	default:
-		log.Errorf("unknown command: %s", args[0])
-		log.Info("see all valid arguments via cde help")
+		slog.Error("unknown command", "arg",args[0])
+		slog.Info("see all valid arguments via cde help")
 		return
 	}
 
