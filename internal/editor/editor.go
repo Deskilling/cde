@@ -2,15 +2,16 @@ package editor
 
 import (
 	"errors"
+	"fmt"
+	"log/slog"
 	"os"
+	"path/filepath"
 
 	"cde/internal/core"
 	"cde/internal/editor/editor/vscode"
 	"cde/internal/editor/editor/vscodium"
 	"cde/internal/editor/editor/zed"
 	"cde/internal/editor/model"
-
-	"charm.land/log/v2"
 )
 
 type Loaded struct {
@@ -20,6 +21,8 @@ type Loaded struct {
 
 var Registered []Loaded
 
+// in the future this should probbably be
+// async but with 3 editors is slower than just scanning
 func Load() {
 	editors := []model.Editor{
 		vscodium.New(),
@@ -34,47 +37,38 @@ func Load() {
 		}
 
 		ws, err := editor.ExtractWorkspace()
-		if err == nil {
+		ws.Path = filepath.Clean(ws.Path)
+		if err == nil && ws.Path != "" {
 			Registered = append(Registered, Loaded{
 				Editor:    editor,
 				Workspace: ws,
 			})
-			continue
+			slog.Debug("got", "editor", editor.Name(), "workspace", ws)
 		} else {
-			log.Warn(err)
+			slog.Warn("no workspace found", "editor", editor.Name(), "err", err)
 		}
 	}
 }
 
-func Latest() (latest model.Workspace, err error) {
-	workingDirectory, _ := os.Getwd()
+func Latest() (model.Workspace, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("getting working directory: %w", err)
+	}
+	wd = filepath.Clean(wd)
 
-	for _, v := range Registered {
-		if v.Workspace.Path == workingDirectory {
-			switch core.GetConfig().Behavior.Repeat {
-			case "other":
-				return
+	var latest Loaded
 
-			case "editor":
-				// TODO i need to save the workspace somewhere (maybe in XDG_CACHE_HOME or smth)
-				log.Warn("editor not implemented currently")
-
-			case "nothing":
-
-			default:
-				log.Warn("invalid Behavior.Repeat key using nothing")
-			}
-		}
-
-		if v.Workspace.Timestamp > latest.Timestamp {
-			log.Debugf("cmp %v(%s) > %v(%s)", v.Workspace.Timestamp, v.Workspace.Path, latest.Timestamp, latest.Path)
-			latest = v.Workspace
+	for _, editor := range Registered {
+		if editor.Workspace.Timestamp >= latest.Workspace.Timestamp {
+			latest = editor
 		}
 	}
 
-	if latest.Path == "" {
+	if latest == (Loaded{}) {
 		return model.Workspace{}, errors.New("no active workspace found")
 	}
 
-	return latest, nil
+	// always cd even if in the same dir
+	return latest.Workspace, nil
 }

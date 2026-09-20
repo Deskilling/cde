@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"cde/internal/core"
 	"cde/internal/editor/model"
 
-	"charm.land/log/v2"
 	_ "modernc.org/sqlite"
 )
 
@@ -28,7 +28,7 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 
 	dataSource := fmt.Sprintf("file:%s?mode=ro&_journal=wal", dbPath)
 
-	log.Debugf("open with sqlite %s", dataSource)
+	slog.Debug("open with sqlite","path", dataSource)
 
 	db, err := sql.Open("sqlite", dataSource)
 	if err != nil {
@@ -57,7 +57,7 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed to parse timestamp: %w", err)
 	}
-	log.Debug(timestamp.Unix())
+	slog.Debug("got time", "time", timestamp.Unix())
 
 	return model.Workspace{
 		Path:      path,

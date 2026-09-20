@@ -21,10 +21,10 @@
       {
         packages.default = pkgs.buildGoModule {
           pname = "cde-bin";
-          version = "0.0.5";
+          version = "0.0.6";
           src = ./.;
 
-          vendorHash = "sha256-0k+PwDC8OJKRlIcHJadlgvW74fh3FHeD0xGFuwbb5o8=";
+          vendorHash = "sha256-nee7yiwXsSfklE478gD5biuQjoL/d9X4N6fnnx3L1OY=";
 
           subPackages = [ "cmd/cde-bin" ];
 

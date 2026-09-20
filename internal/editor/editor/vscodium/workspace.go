@@ -3,14 +3,13 @@ package vscodium
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"cde/internal/core"
 	"cde/internal/editor/model"
-
-	"charm.land/log/v2"
 )
 
 var storagePaths = map[string]string{
@@ -32,7 +31,7 @@ func (e *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
 		return model.Workspace{}, fmt.Errorf("failed getting storagePath: %w", err)
 	}
 
-	log.Debug(storagePath)
+	slog.Debug(storagePath)
 	content, err := os.ReadFile(storagePath)
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed reading file: %w", err)
@@ -42,11 +41,15 @@ func (e *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
 	json.Unmarshal(content, &storageJson)
 
 	path, _ := strings.CutPrefix(storageJson.WindowsState.LastActiveWindow.Folder, "file://")
-	log.Debug(path)
+	if path == "" {
+		return model.Workspace{}, fmt.Errorf("invalid path returned",)
+	}
+
+	slog.Debug(path)
 
 	info, _ := os.Stat(storagePath)
 	time := info.ModTime()
-	log.Debug(time.Unix())
+	slog.Debug("got time", "time", time.Unix())
 
 	return model.Workspace{
 		Path:      path,

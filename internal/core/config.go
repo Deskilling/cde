@@ -47,13 +47,6 @@ func GetConfigLocation() string {
 }
 
 var defaultConfig = Config{
-	Behavior: Behavior{
-		// editor -> old from current editor
-		// other -> other editor
-		// nothing -> nothing
-		Repeat: "editor",
-	},
-
 	Editors: map[string]Editor{
 		"example": {
 			Disabled: true,
