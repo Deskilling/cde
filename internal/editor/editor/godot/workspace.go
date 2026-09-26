@@ -1,15 +1,15 @@
 package godot
 
 import (
-	"cde/internal/core"
-	"cde/internal/editor/model"
-
 	"bufio"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"cde/internal/core"
+	"cde/internal/editor/model"
 )
 
 var storagePaths = map[string]string{
