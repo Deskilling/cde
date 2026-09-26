@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"cde/internal/core"
+	"cde/internal/editor/editor/godot"
 	"cde/internal/editor/editor/vscode"
 	"cde/internal/editor/editor/vscodium"
 	"cde/internal/editor/editor/zed"
@@ -25,6 +26,7 @@ var Registered []Loaded
 // async but with 3 editors is slower than just scanning
 func Load() {
 	editors := []model.Editor{
+		godot.New(),
 		vscodium.New(),
 		vscode.New(),
 		zed.New(),
