@@ -22,6 +22,10 @@ func (e *Godot) ExtractWorkspace() (workspace model.Workspace, err error) {
 		return model.Workspace{}, fmt.Errorf("failed getting storagePath: %w", err)
 	}
 
+	if core.ValidCache(name, filepath.Join(storagePath, "projects.cfg")) {
+		return core.Cache.Workspaces[name].Workspace, nil
+	}
+
 	file, err := os.Open(filepath.Join(storagePath, "projects.cfg"))
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed opening file %w", err)
@@ -62,8 +66,12 @@ func (e *Godot) ExtractWorkspace() (workspace model.Workspace, err error) {
 	time := info.ModTime()
 	slog.Debug("got time", "time", time.Unix())
 
-	return model.Workspace{
+	ws := model.Workspace{
 		Path:      path,
 		Timestamp: time.Unix(),
-	}, nil
+	}
+
+	core.WriteCache(name, core.LatestHash, ws)
+
+	return ws, nil
 }
