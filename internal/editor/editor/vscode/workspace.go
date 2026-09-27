@@ -31,6 +31,10 @@ func (e *VsCode) ExtractWorkspace() (workspace model.Workspace, err error) {
 		return model.Workspace{}, fmt.Errorf("failed getting storagePath: %w", err)
 	}
 
+	if core.ValidCache(name, storagePath) {
+		return core.Cache.Workspaces[name].Workspace, nil
+	}
+
 	slog.Debug(storagePath)
 	content, err := os.ReadFile(storagePath)
 	if err != nil {
@@ -47,8 +51,12 @@ func (e *VsCode) ExtractWorkspace() (workspace model.Workspace, err error) {
 	time := info.ModTime()
 	slog.Debug("got time", "time", time.Unix())
 
-	return model.Workspace{
+	ws := model.Workspace{
 		Path:      path,
 		Timestamp: time.Unix(),
-	}, nil
+	}
+
+	core.WriteCache(name, core.LatestHash, ws)
+
+	return ws, nil
 }

@@ -11,7 +11,7 @@ import (
 	"cde/internal/editor"
 )
 
-const Version = "0.0.6"
+const Version = "0.0.8"
 
 func init() {
 	core.InitLogger(8)
@@ -20,6 +20,8 @@ func init() {
 	if err != nil {
 		slog.Info("created default config at","location", core.GetConfigLocation())
 	}
+
+	core.LoadCache()
 }
 
 func usage() {
