@@ -26,13 +26,15 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 		return model.Workspace{}, fmt.Errorf("failed getting dbPath: %w", err)
 	}
 
-	if core.ValidCache(name, dbPath) {
-		return core.Cache.Workspaces[name].Workspace, nil
-	}
+	/*
+		if core.ValidCache(name, dbPath) {
+			return core.Cache.Workspaces[name].Workspace, nil
+		}
+	*/
 
 	dataSource := fmt.Sprintf("file:%s?mode=ro&_journal=wal", dbPath)
 
-	slog.Debug("open with sqlite","path", dataSource)
+	slog.Debug("open with sqlite", "path", dataSource)
 
 	db, err := sql.Open("sqlite", dataSource)
 	if err != nil {
@@ -68,7 +70,7 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 		Timestamp: timestamp.Unix(),
 	}
 
-	core.WriteCache(name, core.LatestHash, ws)
+	// core.WriteCache(name, core.LatestHash, ws)
 
 	return ws, nil
 }
