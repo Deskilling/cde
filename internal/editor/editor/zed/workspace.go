@@ -40,7 +40,9 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("open of db failed: %w", err)
 	}
-	defer db.Close()
+	defer func() {
+		err = db.Close()
+	}()
 
 	var path string
 	var timestampStr string
@@ -72,5 +74,5 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 
 	// core.WriteCache(name, core.LatestHash, ws)
 
-	return ws, nil
+	return ws, err
 }

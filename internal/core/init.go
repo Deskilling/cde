@@ -25,7 +25,7 @@ var shells = map[string]string{
 func InitShell(shell string) {
 	init, ok := shells[shell]
 	if !ok {
-		slog.Error("unsupported shell", "shell",shell)
+		slog.Error("unsupported shell", "shell", shell)
 		os.Exit(1)
 	}
 	fmt.Print(init)

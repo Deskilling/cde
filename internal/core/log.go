@@ -8,10 +8,7 @@ import (
 )
 
 func InitLogger(level int) {
-	isDebug := false
-	if level == -4 {
-		isDebug = true
-	}
+	isDebug := level == -4
 
 	slog.SetDefault(slog.New(tint.NewTextHandler(os.Stderr, &tint.Options{
 		AddSource: isDebug,

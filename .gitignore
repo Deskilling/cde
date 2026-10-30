@@ -2,8 +2,7 @@
 .DS_Store
 
 # Binary
-bin/
-result/
+build/
 
 # Test files
 *.test

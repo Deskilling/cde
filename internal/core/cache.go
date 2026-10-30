@@ -49,11 +49,14 @@ func GetCacheLocation() string {
 	return filepath.Join(GetCacheDir(), "cde-cache.json")
 }
 
-func LoadCache() {
+func LoadCache() (err error) {
 	content, err := os.ReadFile(GetCacheLocation())
 	if err != nil {
 		slog.Error("hmm", "err", err)
-		os.Create(GetCacheLocation())
+		_, err := os.Create(GetCacheLocation())
+		if err != nil {
+			return fmt.Errorf("failed creating cache file: %w", err)
+		}
 		Cache = &CacheJson{
 			map[string]CacheMap{},
 		}
@@ -66,14 +69,18 @@ func LoadCache() {
 			map[string]CacheMap{},
 		}
 	}
+
+	return nil
 }
 
-func CalculateHash(filepath string) (hashSha1 string,err error) {
+func CalculateHash(filepath string) (hashSha1 string, err error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+	}()
 
 	sha1Hash := sha1.New()
 
@@ -82,10 +89,10 @@ func CalculateHash(filepath string) (hashSha1 string,err error) {
 		return "", err
 	}
 
-	return hex.EncodeToString(sha1Hash.Sum(nil)), nil
+	return hex.EncodeToString(sha1Hash.Sum(nil)), err
 }
 
-func ValidCache(name string, path string) bool{
+func ValidCache(name string, path string) bool {
 	entry, ok := Cache.Workspaces[name]
 
 	hash, err := CalculateHash(path)
@@ -96,7 +103,7 @@ func ValidCache(name string, path string) bool{
 	slog.Debug("got sha1", "path", path, "sha1", hash)
 	slog.Debug("entry hash", "hash", entry.Hash)
 
-	if ok && hash == entry.Hash{
+	if ok && hash == entry.Hash {
 		return true
 	} else {
 		entry.Hash = hash
@@ -109,7 +116,7 @@ func ValidCache(name string, path string) bool{
 	return false
 }
 
-func WriteCache(name string, hash string, ws model.Workspace) error{
+func WriteCache(name string, hash string, ws model.Workspace) error {
 	entry := Cache.Workspaces[name]
 
 	entry.Hash = hash

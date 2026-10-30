@@ -42,7 +42,10 @@ func (e *VsCode) ExtractWorkspace() (workspace model.Workspace, err error) {
 	}
 
 	var storageJson storage
-	json.Unmarshal(content, &storageJson)
+	err = json.Unmarshal(content, &storageJson)
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("failed vscode unmarshal: %w", err)
+	}
 
 	path, _ := strings.CutPrefix(storageJson.WindowsState.LastActiveWindow.Folder, "file://")
 	slog.Debug(path)
@@ -56,7 +59,10 @@ func (e *VsCode) ExtractWorkspace() (workspace model.Workspace, err error) {
 		Timestamp: time.Unix(),
 	}
 
-	core.WriteCache(name, core.LatestHash, ws)
+	err = core.WriteCache(name, core.LatestHash, ws)
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("failed vscode to cache: %w", err)
+	}
 
 	return ws, nil
 }

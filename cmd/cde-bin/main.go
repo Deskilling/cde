@@ -14,14 +14,18 @@ import (
 const Version = "0.0.8"
 
 func init() {
+	var err error
 	core.InitLogger(8)
 
-	err := core.LoadConfig(core.GetConfigLocation())
+	err = core.LoadConfig(core.GetConfigLocation())
 	if err != nil {
-		slog.Info("created default config at","location", core.GetConfigLocation())
+		slog.Info("created default config at", "location", core.GetConfigLocation())
 	}
 
-	core.LoadCache()
+	err = core.LoadCache()
+	if err != nil {
+		slog.Warn("failed loading cache", "err", err)
+	}
 }
 
 func usage() {
@@ -90,7 +94,11 @@ func main() {
 			return
 		}
 
-		core.InstallShell(args[1])
+		err := core.InstallShell(args[1])
+		if err != nil {
+			slog.Error("failed installing to you shell", "err", err)
+			return
+		}
 
 	case "config":
 		fmt.Print(core.GetConfigLocation())
@@ -103,7 +111,7 @@ func main() {
 		}
 
 	default:
-		slog.Error("unknown command", "arg",args[0])
+		slog.Error("unknown command", "arg", args[0])
 		slog.Info("see all valid arguments via cde help")
 		return
 	}

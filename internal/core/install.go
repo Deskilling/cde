@@ -13,14 +13,16 @@ func appendToFile(path, content string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open %s: %w", path, err)
 	}
-	defer f.Close()
+	defer func() {
+		err = f.Close()
+	}()
 
 	_, err = fmt.Fprintf(f, "\n%s\n", content)
 	if err != nil {
 		return fmt.Errorf("failed to write to %s: %w", path, err)
 	}
 
-	return nil
+	return err
 }
 
 var zshConfig map[string]string = map[string]string{

@@ -42,11 +42,14 @@ func (e *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
 	}
 
 	var storageJson storage
-	json.Unmarshal(content, &storageJson)
+	err = json.Unmarshal(content, &storageJson)
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("failed vscodium unmarshal: %w", err)
+	}
 
 	path, _ := strings.CutPrefix(storageJson.WindowsState.LastActiveWindow.Folder, "file://")
 	if path == "" {
-		return model.Workspace{}, fmt.Errorf("invalid path returned",)
+		return model.Workspace{}, fmt.Errorf("invalid path returned")
 	}
 
 	slog.Debug(path)
@@ -60,7 +63,10 @@ func (e *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
 		Timestamp: time.Unix(),
 	}
 
-	core.WriteCache(name, core.LatestHash, ws)
+	err = core.WriteCache(name, core.LatestHash, ws)
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("failed vscodium to cache: %w", err)
+	}
 
 	return ws, nil
 }

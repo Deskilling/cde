@@ -30,7 +30,9 @@ func (e *Godot) ExtractWorkspace() (workspace model.Workspace, err error) {
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed opening file %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+	}()
 
 	scanner := bufio.NewScanner(file)
 
@@ -71,7 +73,10 @@ func (e *Godot) ExtractWorkspace() (workspace model.Workspace, err error) {
 		Timestamp: time.Unix(),
 	}
 
-	core.WriteCache(name, core.LatestHash, ws)
+	err = core.WriteCache(name, core.LatestHash, ws)
+	if err != nil {
+		return model.Workspace{}, fmt.Errorf("failed godot to cache: %w", err)
+	}
 
 	return ws, nil
 }

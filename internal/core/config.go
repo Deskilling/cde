@@ -63,10 +63,16 @@ func LoadConfig(filePath string) (err error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		config = &defaultConfig
-		SaveConfig(GetConfigLocation())
+		err := SaveConfig(GetConfigLocation())
+		if err != nil {
+			return fmt.Errorf("failed saving default config: %w", err)
+		}
 		return nil
 	}
-	defer f.Close()
+
+	defer func() {
+		err = f.Close()
+	}()
 
 	cfg := &Config{}
 	err = yaml.NewDecoder(f).Decode(cfg)
@@ -75,7 +81,7 @@ func LoadConfig(filePath string) (err error) {
 	}
 
 	config = cfg
-	return nil
+	return err
 }
 
 func SaveConfig(filePath string) (err error) {
@@ -87,14 +93,16 @@ func SaveConfig(filePath string) (err error) {
 	if err != nil {
 		return fmt.Errorf("failed creating file %s: %w", filePath, err)
 	}
-	defer f.Close()
+	defer func() {
+		err = f.Close()
+	}()
 
 	err = yaml.NewEncoder(f).Encode(config)
 	if err != nil {
 		return fmt.Errorf("failed encoding file %s: %w", filePath, err)
 	}
 
-	return nil
+	return err
 }
 
 func GetConfig() *Config {

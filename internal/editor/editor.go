@@ -2,9 +2,7 @@ package editor
 
 import (
 	"errors"
-	"fmt"
 	"log/slog"
-	"os"
 	"path/filepath"
 
 	"cde/internal/core"
@@ -53,11 +51,13 @@ func Load() {
 }
 
 func Latest() (model.Workspace, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return model.Workspace{}, fmt.Errorf("getting working directory: %w", err)
-	}
-	wd = filepath.Clean(wd)
+	/*
+		wd, err := os.Getwd()
+		if err != nil {
+			return model.Workspace{}, fmt.Errorf("getting working directory: %w", err)
+		}
+		wd = filepath.Clean(wd)
+	*/
 
 	var latest Loaded
 
