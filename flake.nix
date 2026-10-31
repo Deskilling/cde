@@ -20,7 +20,7 @@
     {
       packages = forAllSystems (pkgs: {
         default = pkgs.buildGoModule {
-          pname = "cde";
+          pname = "cde-bin";
           version = "0.0.8";
           src = ./.;
 
