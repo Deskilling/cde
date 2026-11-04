@@ -3,7 +3,7 @@ function cde
         if string match -q -- '^-' "$argv[1]"
             cd (cde-bin $argv[1])
         else
-            cd (cde-bin $argv)
+            cde-bin $argv
         end
     else
         cd (cde-bin path)

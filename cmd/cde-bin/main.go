@@ -11,7 +11,7 @@ import (
 	"cde/internal/editor"
 )
 
-const Version = "0.0.8"
+const Version = "0.1.0"
 
 func init() {
 	var err error
@@ -50,14 +50,11 @@ func main() {
 
 	_editor, hasDash := strings.CutPrefix(args[0], "-")
 	if hasDash {
+		editor.Load()
+
 		for _, u := range editor.Registered {
 			if u.Editor.Name() == _editor {
-				workspace, err := u.Editor.ExtractWorkspace()
-				if err != nil {
-					slog.Error("Failed getting workspace", "err", err)
-					return
-				}
-				fmt.Print(workspace.Path)
+				fmt.Print(u.Workspace.Path)
 			}
 		}
 

@@ -7,6 +7,7 @@ import (
 
 	"cde/internal/core"
 	"cde/internal/editor/editor/godot"
+	"cde/internal/editor/editor/gram"
 	"cde/internal/editor/editor/vscode"
 	"cde/internal/editor/editor/vscodium"
 	"cde/internal/editor/editor/zed"
@@ -25,6 +26,7 @@ var Registered []Loaded
 func Load() {
 	editors := []model.Editor{
 		godot.New(),
+		gram.New(),
 		vscodium.New(),
 		vscode.New(),
 		zed.New(),
