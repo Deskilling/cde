@@ -59,8 +59,8 @@ var defaultConfig = Config{
 
 var config *Config
 
-func LoadConfig(filePath string) (err error) {
-	f, err := os.Open(filePath)
+func LoadConfig(path string) (err error) {
+	f, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		config = &defaultConfig
 		err := SaveConfig(GetConfigLocation())
@@ -77,21 +77,23 @@ func LoadConfig(filePath string) (err error) {
 	cfg := &Config{}
 	err = yaml.NewDecoder(f).Decode(cfg)
 	if err != nil {
-		return fmt.Errorf("failed decoding file %s: %w", filePath, err)
+		return fmt.Errorf("failed decoding file %s: %w", path, err)
 	}
 
 	config = cfg
 	return err
 }
 
-func SaveConfig(filePath string) (err error) {
+func SaveConfig(path string) (err error) {
 	if config == nil {
 		return fmt.Errorf("config file not found")
 	}
 
-	f, err := os.Create(filePath)
+	path = filepath.Clean(path)
+
+	f, err := os.Create(path)
 	if err != nil {
-		return fmt.Errorf("failed creating file %s: %w", filePath, err)
+		return fmt.Errorf("failed creating file %s: %w", path, err)
 	}
 	defer func() {
 		err = f.Close()
@@ -99,7 +101,7 @@ func SaveConfig(filePath string) (err error) {
 
 	err = yaml.NewEncoder(f).Encode(config)
 	if err != nil {
-		return fmt.Errorf("failed encoding file %s: %w", filePath, err)
+		return fmt.Errorf("failed encoding file %s: %w", path, err)
 	}
 
 	return err

@@ -26,7 +26,8 @@ func (e *Godot) ExtractWorkspace() (workspace model.Workspace, err error) {
 		return core.Cache.Workspaces[name].Workspace, nil
 	}
 
-	file, err := os.Open(filepath.Join(storagePath, "projects.cfg"))
+	file, err := os.Open(filepath.Join(storagePath, "projects.cfg")) //gosec:disable G304 user variable
+
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed opening file %w", err)
 	}

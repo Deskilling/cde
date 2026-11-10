@@ -54,7 +54,7 @@ func (e *Zed) ExtractWorkspace() (workspace model.Workspace, err error) {
 		ORDER BY timestamp DESC
 		LIMIT 1
 	`).Scan(&path, &timestampStr)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return model.Workspace{}, errors.New("workspace not found")
 	}
 	if err != nil {

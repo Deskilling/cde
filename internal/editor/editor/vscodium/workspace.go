@@ -36,7 +36,7 @@ func (e *VsCodium) ExtractWorkspace() (workspace model.Workspace, err error) {
 	}
 
 	slog.Debug(storagePath)
-	content, err := os.ReadFile(storagePath)
+	content, err := os.ReadFile(storagePath) //gosec:disable G304 user variable
 	if err != nil {
 		return model.Workspace{}, fmt.Errorf("failed reading file: %w", err)
 	}

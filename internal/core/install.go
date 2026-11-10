@@ -9,7 +9,8 @@ import (
 )
 
 func appendToFile(path, content string) error {
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	path = filepath.Clean(path)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to open %s: %w", path, err)
 	}
@@ -54,11 +55,11 @@ func InstallShell(shell string) (err error) {
 		if !ok {
 			return fmt.Errorf("unsupported os: %s", runtime.GOOS)
 		}
-		err = os.MkdirAll(confDir, 0755)
+		err = os.MkdirAll(confDir, 0750)
 		if err != nil {
 			return err
 		}
-		return os.WriteFile(filepath.Join(confDir, "cde.fish"), []byte(`cde-bin init fish | source`), 0644)
+		return os.WriteFile(filepath.Join(confDir, "cde.fish"), []byte(`cde-bin init fish | source`), 0600)
 
 	case "bash":
 		bashConfig, ok := bashConfig[runtime.GOOS]

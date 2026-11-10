@@ -21,7 +21,7 @@
       packages = forAllSystems (pkgs: {
         default = pkgs.buildGoModule {
           pname = "cde-bin";
-          version = "0.1.0";
+          version = "0.1.1";
           src = ./.;
 
           vendorHash = "sha256-nee7yiwXsSfklE478gD5biuQjoL/d9X4N6fnnx3L1OY=";

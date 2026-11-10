@@ -1,7 +1,7 @@
 package core
 
 import (
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -73,8 +73,8 @@ func LoadCache() (err error) {
 	return nil
 }
 
-func CalculateHash(filepath string) (hashSha1 string, err error) {
-	file, err := os.Open(filepath)
+func CalculateHash(path string) (hashSha1 string, err error) {
+	file, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		return "", err
 	}
@@ -82,14 +82,14 @@ func CalculateHash(filepath string) (hashSha1 string, err error) {
 		err = file.Close()
 	}()
 
-	sha1Hash := sha1.New()
+	shaHash := sha256.New()
 
-	_, err = io.Copy(io.MultiWriter(sha1Hash), file)
+	_, err = io.Copy(io.MultiWriter(shaHash), file)
 	if err != nil {
 		return "", err
 	}
 
-	return hex.EncodeToString(sha1Hash.Sum(nil)), err
+	return hex.EncodeToString(shaHash.Sum(nil)), err
 }
 
 func ValidCache(name string, path string) bool {
@@ -100,7 +100,7 @@ func ValidCache(name string, path string) bool {
 		return false
 	}
 
-	slog.Debug("got sha1", "path", path, "sha1", hash)
+	slog.Debug("got sha", "path", path, "sha", hash)
 	slog.Debug("entry hash", "hash", entry.Hash)
 
 	if ok && hash == entry.Hash {
@@ -129,7 +129,7 @@ func WriteCache(name string, hash string, ws model.Workspace) error {
 		return fmt.Errorf("failed to marshal cache: %w", err)
 	}
 
-	err = os.WriteFile(GetCacheLocation(), content, 0777)
+	err = os.WriteFile(GetCacheLocation(), content, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to save Cache: %w", err)
 	}
